@@ -1,0 +1,694 @@
+#:import get_color_from_hex kivy.utils.get_color_from_hex
+
+
+FloatLayout:
+    canvas.before:
+        Color:
+            rgb: get_color_from_hex('#eeeeee')
+        Rectangle:
+            size: self.size
+            pos: self.pos
+            source: 'data/background.png'
+
+    padding: min(root.width, root.height)/48
+
+    GameBoard:
+        id: game_board
+        pos: (root.padding, root.height - self.height - root.padding*3 - (self.height - 4*self.width/50)/5/2.15)
+        size_hint: (None, None)
+        size: [root.width - root.padding*2 if root.height > root.width else root.height - root.padding*4  - (root.height - root.padding*4 - 4*(root.height - root.padding*4)/50)/5/2.15 ] * 2
+        canvas:
+            Color:
+                rgba: get_color_from_hex('#bdbdbd00')
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        GridLayout:
+            pos: game_board.pos
+            size: game_board.size
+            spacing: [game_board.width/50]
+            cols: 5
+
+            Tile:
+                tile_index: 0
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 1
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 2
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 3
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 4
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 5
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 6
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 7
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 8
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 9
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 10
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 11
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 12
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 13
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 14
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 15
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 16
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 17
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 18
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 19
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 20
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 21
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 22
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 23
+                letter: app.matrix[self.tile_index]
+            Tile:
+                tile_index: 24
+                letter: app.matrix[self.tile_index]
+
+    Btn:
+        id: info_btn
+        pos: [root.padding, root.height-self.height-root.padding]
+        size_hint: (None, None)
+        size: [(game_board.height - 4*game_board.width/50)/5, (game_board.height - 4*game_board.width/50)/5/2.15]
+        text: 'info'
+        on_release: app.show_about()
+
+    Btn:
+        id: sound_btn
+        pos: [root.padding + self.width + game_board.width/50, root.height-self.height-root.padding]
+        size_hint: (None, None)
+        size: [(game_board.height - 4*game_board.width/50)/5, (game_board.height - 4*game_board.width/50)/5/2.15]
+        text: 'vol'
+        on_release: app.set_sound()
+
+    Btn:
+        id: pass_btn
+        pos: [root.padding + self.width*3 + 3*game_board.width/50, root.height-self.height-root.padding]
+        size_hint: (None, None)
+        size: [(game_board.height - 4*game_board.width/50)/5, (game_board.height - 4*game_board.width/50)/5/2.15]
+        text: 'pass'
+        disabled: app.is_block or app.is_game_over
+        on_release: app.view_pass.open()
+
+    Btn:
+        id: new_btn
+        pos: [root.padding + self.width*4 + 4*game_board.width/50, root.height-self.height-root.padding]
+        size_hint: (None, None)
+        size: [(game_board.height - 4*game_board.width/50)/5, (game_board.height - 4*game_board.width/50)/5/2.15]
+        text: 'game'
+        on_release: app.temp_playerAI = app.playerAI; app.temp_balda = app.balda; app.view_mode.open()
+
+    Label:
+        pos: (root.padding if root.height > root.width else game_board.width + root.padding*3, game_board.y - self.height - root.padding*2 if root.height > root.width else root.height - self.height - root.padding)
+        size_hint: (None, None)
+        size: self.texture_size
+        halign: 'left'
+        valign: 'top'
+        color: get_color_from_hex('#424242')
+        font_size: new_btn.height/2.25
+        font_name: 'Rubik.ttf'
+        markup: True
+        text: player_label_1.text
+
+    Label:
+        id: player_label_1
+        pos: (root.padding if root.height > root.width else game_board.width + root.padding*3, game_board.y - self.height - root.padding*2 + self.font_size/14 if root.height > root.width else root.height - self.height - root.padding + self.font_size/14)
+        size_hint: (None, None)
+        size: self.texture_size
+        halign: 'left'
+        valign: 'top'
+        color: get_color_from_hex('#fafafa') if app.player_turn == 1 else get_color_from_hex('#80cbc4')
+        font_size: new_btn.height/2.25
+        font_name: 'Rubik.ttf'
+        markup: True
+        text: app.player_label + '1\n' + '[size=' + str(int(2*new_btn.height/2.25)) + ']' + str(app.score[0]) + '[/size]'
+
+    Label:
+        pos: (root.width - self.width - root.padding, game_board.y - self.height - root.padding*2 if root.height > root.width else root.height - self.height - root.padding)
+        size_hint: (None, None)
+        size: self.texture_size
+        halign: 'right'
+        valign: 'top'
+        color: get_color_from_hex('#424242')
+        font_size: new_btn.height/2.25
+        font_name: 'Rubik.ttf'
+        markup: True
+        text: player_label_2.text
+
+    Label:
+        id: player_label_2
+        pos: (root.width - self.width - root.padding, game_board.y - self.height - root.padding*2 + self.font_size/14 if root.height > root.width else root.height - self.height - root.padding + self.font_size/14)
+        size_hint: (None, None)
+        size: self.texture_size
+        halign: 'right'
+        valign: 'top'
+        color: get_color_from_hex('#fafafa') if app.player_turn == 0 else get_color_from_hex('#80cbc4')
+        font_size: new_btn.height/2.25
+        font_name: 'Rubik.ttf'
+        markup: True
+        text: app.player_label + '2\n' + '[size=' + str(int(2*new_btn.height/2.25)) + ']' + str(app.score[1]) + '[/size]'
+
+    Label:
+        id: info_label
+        pos: (player_label_1.x + (player_label_2.x + player_label_2.width - player_label_1.x)/2 - self.width/2, root.padding)
+        size_hint: (None, None)
+        size: self.texture_size
+        halign: 'center'
+        valign: 'bottom'
+        color: get_color_from_hex('#505050')
+        font_size: new_btn.height/2.25
+        font_name: 'Rubik.ttf'
+        text: app.info_label
+
+    HistoryBoard:
+        id: history_board
+        pos: (player_label_1.x + (player_label_2.x + player_label_2.width - player_label_1.x)/2 - self.width/2, root.padding*2 + info_label.height if not app.show_keyboard else -self.height - root.padding)
+        size_hint: (None, None)
+        size: [(player_label_2.x + player_label_2.width - player_label_1.x)*0.7, player_label_1.y - root.padding]
+        font_size: new_btn.height/2.25
+
+    KeyBoard:
+        id: key_board
+        pos: (player_label_1.x + (player_label_2.x + player_label_2.width - player_label_1.x)/2 - self.width/2, root.padding*2 + info_label.height if app.show_keyboard else -self.height - root.padding)
+        size_hint: (None, None)
+        size: [(player_label_2.x + player_label_2.width - player_label_1.x)*0.7, player_label_1.y - root.padding]
+        padding: self.width/150
+        button_height: info_btn.height
+
+    Image:
+        source: 'data/AI.png'
+        pos: (root.width - self.width/2, player_label_2.y - self.height)
+        size_hint: (None, None)
+        size: [player_label_2.height*2]*2
+        opacity: 0.5 if app.playerAI and app.player_turn == 1 and not app.is_game_over else 0
+
+
+<Tile>:
+    source: 'data/cell.png'
+    canvas.before:
+        Color:
+            rgba: get_color_from_hex('#26a69a80') if self.selection else get_color_from_hex('#fafafa80')
+        BorderImage:
+            size: self.size
+            pos: self.pos
+            source: root.source
+            auto_scale: 'both_lower'
+            border: (16, 16, 16, 16)
+
+    Label:
+        pos: root.pos
+        size: root.size
+        color: get_color_from_hex('#424242')
+        font_size: root.height/1.5
+        font_name: 'Rubik.ttf'
+        text: root.letter
+
+    Label:
+        pos: (root.x, root.y - self.font_size/32)
+        size: root.size
+        color: get_color_from_hex('#fafafa')
+        font_size: root.height/1.5
+        font_name: 'Rubik.ttf'
+        text: root.letter
+
+
+<Btn>:
+    source: 'data/button_normal.png'
+    offset: 0 if self.source == 'data/button_normal.png' else self.height/32
+    canvas.before:
+        Color:
+            rgb: get_color_from_hex('#bdbdbd')
+        BorderImage:
+            size: self.size
+            pos: self.pos
+            source: root.source
+            auto_scale: 'both_lower'
+            border: (16, 16, 16, 16)
+
+    opacity: 1 if not self.disabled else 0.5
+
+    on_press:
+        self.source = 'data/button_press.png'
+        if app.is_sound and app.sound_click: app.sound_click.play()
+    on_release:
+        self.source = 'data/button_normal.png'
+    on_touch_up:
+        self.source = 'data/button_normal.png'
+
+    Label:
+        pos: (root.x + (root.width - self.width)/2, root.y + (root.height - self.height)/2 + self.height/16 - root.offset)
+        size_hint: (None, None)
+        size: self.texture_size
+        color: get_color_from_hex('#424242') if root.offset == 0 else get_color_from_hex('#333333')
+        font_size: root.height/2.25
+        font_name: 'Rubik.ttf'
+        markup: True
+        text: root.text
+
+    Label:
+        pos: (root.x + (root.width - self.width)/2, root.y + (root.height - self.height)/2 - root.offset)
+        size_hint: (None, None)
+        size: self.texture_size
+        color: get_color_from_hex('#fafafa')
+        font_size: root.height/2.25
+        font_name: 'Rubik.ttf'
+        markup: True
+        text: root.text
+
+
+<ToggleBtn>:
+    source: 'data/button_normal.png' if not self.is_select else 'data/button_press.png'
+    offset: 0 if self.source == 'data/button_normal.png' else self.height/32
+    canvas.before:
+        Color:
+            rgb: get_color_from_hex('#bdbdbd') if not self.is_select else get_color_from_hex('#80cbc4')
+        BorderImage:
+            size: self.size
+            pos: self.pos
+            source: root.source
+            auto_scale: 'both_lower'
+            border: (16, 16, 16, 16)
+
+    Label:
+        pos: (root.x + (root.width - self.width)/2, root.y + (root.height - self.height)/2 + self.font_size/24 - root.offset)
+        size_hint: (None, None)
+        size: self.texture_size
+        color: get_color_from_hex('#424242') if root.offset == 0 else get_color_from_hex('#333333')
+        font_size: min(root.height, root.width)/1.5
+        font_name: 'Rubik.ttf'
+        markup: True
+        text: root.text
+
+    Label:
+        pos: (root.x + (root.width - self.width)/2, root.y + (root.height - self.height)/2 - root.offset)
+        size_hint: (None, None)
+        size: self.texture_size
+        color: get_color_from_hex('#fafafa')
+        font_size: min(root.height, root.width)/1.5
+        font_name: 'Rubik.ttf'
+        markup: True
+        text: root.text
+
+
+<HistoryBoard>:
+    canvas:
+        Color:
+            rgba: get_color_from_hex('#bdbdbd00')
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    GridLayout:
+        cols: 1
+        size_hint_y: None
+        height: self.minimum_height
+
+        ShadowLabel:
+            id: begin_lbl
+            text: root.text
+            font_size: root.font_size
+            text_size: self.width, None
+            size_hint_y: None
+            height: self.texture_size[1]
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: self.minimum_height
+
+            AnchorLayout:
+                anchor_y: 'top'
+                size_hint_y: None
+                height: max(lbl0.texture_size[1], lbl1.texture_size[1])
+
+                ShadowLabel:
+                    id: lbl0
+                    text: root.player_text[0]
+                    font_size: root.font_size
+                    text_size: self.width, None
+                    size_hint_y: None
+                    height: self.texture_size[1]
+
+            AnchorLayout:
+                anchor_y: 'top'
+                size_hint_y: None
+                height: max(lbl0.texture_size[1], lbl1.texture_size[1])
+
+                ShadowLabel:
+                    id: lbl1
+                    text: root.player_text[1]
+                    font_size: root.font_size
+                    text_size: self.width, None
+                    size_hint_y: None
+                    height: self.texture_size[1]
+
+
+<ShadowLabel>:
+    color: get_color_from_hex('#424242')
+    valign: 'top'
+    halign: 'center'
+    markup: True
+    font_name: 'Rubik.ttf'
+
+    Label:
+        pos: (root.x, root.y + root.font_size/14)
+        size: root.size
+        color: get_color_from_hex('#cccccc')
+        valign: 'top'
+        halign: 'center'
+        markup: True
+        font_name: 'Rubik.ttf'
+        font_size: root.font_size
+        text: root.text
+
+
+<KeyBoard>:
+    canvas:
+        Color:
+            rgba: get_color_from_hex('#bdbdbd00')
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    apply_btn: apply_btn
+    cancel_btn: cancel_btn
+
+    GridLayout:
+        pos: (root.x, root.y + root.height - self.height)
+        size: [root.width, root.height - root.button_height - root.padding]
+        spacing: root.padding
+        cols: 8
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+        ToggleBtn:
+
+    Btn:
+        id: cancel_btn
+        pos: (root.x, root.y)
+        size_hint: (None, None)
+        size: [(root.width - root.padding)/2, root.button_height]
+
+    Btn:
+        id: apply_btn
+        pos: (root.x + root.width - self.width, root.y)
+        size_hint: (None, None)
+        size: [(root.width - root.padding)/2, root.button_height]
+
+
+<ScrollableLabel>:
+    Label:
+        size_hint_y: None
+        height: self.texture_size[1]
+        padding: (10, 10)
+        text_size: self.width, None
+        valign: 'middle'
+        halign: 'center'
+        markup: True
+        font_name: 'Rubik.ttf'
+        color: get_color_from_hex('#fafafa')
+        font_size: min(root.width, root.height)/15
+        text: root.text
+
+
+<ViewInfo>:
+    scroll_label: scroll_label
+
+    BoxLayout:
+        orientation: 'vertical'
+        pos: root.pos
+        size: root.size
+        padding: [10, 10, 10, 10]
+        spacing: 10
+
+        ScrollableLabel:
+            id: scroll_label
+            size_hint: (1, 0.85)
+            text: root.text
+
+        Btn:
+            size_hint: (1, 0.15)
+            text: 'OK'
+            on_release: scroll_label.scroll_y = 1; root.parent.dismiss()
+
+
+<ViewInfoSmall>:
+    BoxLayout:
+        orientation: 'vertical'
+        pos: root.pos
+        size: root.size
+        padding: [10, 10, 10, 10]
+
+        Label:
+            size_hint: (1, 0.85)
+            text_size: self.size
+            valign: 'middle'
+            halign: 'center'
+            text: root.text
+            markup: True
+            font_name: 'Rubik.ttf'
+            color: get_color_from_hex('#fafafa')
+            font_size: min(root.width, root.height)/15
+
+        Btn:
+            size_hint: (1, 0.15)
+            text: 'OK'
+            on_release: root.parent.dismiss()
+
+
+<ViewChoice>:
+    BoxLayout:
+        orientation: 'vertical'
+        pos: root.pos
+        size: root.size
+        padding: [10, 10, 10, 10]
+
+        Label:
+            size_hint: (1, 0.85)
+            text_size: self.size
+            valign: 'middle'
+            halign: 'center'
+            text: root.text
+            font_name: 'Rubik.ttf'
+            color: get_color_from_hex('#fafafa')
+            font_size: min(root.width, root.height)/15
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (1, 0.15)
+            spacing: 10
+
+            Btn:
+                id: yes_btn
+                size_hint: (0.5, 1)
+                text: root.text_yes
+                on_release: root.parent.dismiss()
+
+            Btn:
+                id: no_btn
+                size_hint: (0.5, 1)
+                text: root.text_no
+                on_release: root.parent.dismiss()
+
+
+<SelectBox>:
+    opacity: 1 if not self.disabled else 0.5
+
+    on_press:
+        self.bg_color = get_color_from_hex('#80cbc4')
+        if app.is_sound and app.sound_click: app.sound_click.play()
+    on_release:  self.bg_color = get_color_from_hex('#fafafa')
+    on_touch_up: self.bg_color = get_color_from_hex('#fafafa')
+
+    BoxLayout:
+        orientation: 'horizontal'
+        pos: root.pos
+        size: root.size
+        spacing: 10
+
+        Widget:
+            id: chbox
+            size_hint: (0.225, 1)
+            source: 'data/cell.png'
+            canvas.before:
+                Color:
+                    rgb: root.bg_color
+                BorderImage:
+                    size: [self.height,] * 2
+                    pos: self.pos
+                    source: 'data/cell.png'
+                    auto_scale: 'both_lower'
+                    border: (16, 16, 16, 16)
+            opacity: 0.5
+
+        Label:
+            size_hint: (0.775, 1)
+            text_size: self.size
+            valign: 'middle'
+            halign: 'left'
+            text: root.text
+            font_name: 'Rubik.ttf'
+            color: get_color_from_hex('#fafafa')
+            font_size: chbox.height * 0.35
+
+    Image:
+        source: 'data/check.png'
+        allow_stretch: True
+        size_hint: (None, None)
+        size: [chbox.height*0.75,] * 2
+        pos:  [chbox.x + chbox.height/2 - self.width/2, chbox.y + chbox.height/2 - self.height/2,]
+        opacity: 1 if root.select else 0
+
+
+<ViewMode>:
+    BoxLayout:
+        orientation: 'vertical'
+        pos: root.pos
+        size: root.size
+        padding: [10, 10, 10, 10]
+
+        Label:
+            size_hint: (1, 0.4)
+            text_size: self.size
+            valign: 'middle'
+            halign: 'center'
+            text: root.text
+            font_name: 'Rubik.ttf'
+            color: get_color_from_hex('#fafafa')
+            font_size: min(root.width, root.height)/15
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (1, 0.3)
+
+            Widget:
+                size_hint: (0.05, 1)
+
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: (0.475, 1)
+
+                SelectBox:
+                    size_hint: (1, 0.425)
+                    text: root.text_single_mode
+                    select: True if app.temp_playerAI else False
+                    on_release: app.temp_playerAI = True
+
+                Widget:
+                    size_hint: (1, 0.15)
+
+                SelectBox:
+                    size_hint: (1, 0.425)
+                    text: root.text_hotseat
+                    select: True if not app.temp_playerAI else False
+                    on_release: app.temp_playerAI = False
+
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: (0.475, 1)
+
+                SelectBox:
+                    size_hint: (1, 0.425)
+                    text: root.text_balda
+                    select: True if app.temp_balda and app.temp_playerAI else False
+                    on_release: app.temp_balda = True
+                    disabled: True if not app.temp_playerAI else False
+
+                Widget:
+                    size_hint: (1, 0.15)
+
+                SelectBox:
+                    size_hint: (1, 0.425)
+                    text: root.text_AI
+                    select: True if not app.temp_balda and app.temp_playerAI else False
+                    on_release: app.temp_balda = False
+                    disabled: True if not app.temp_playerAI else False
+
+        Widget:
+            size_hint: (1, 0.15)
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (1, 0.15)
+            spacing: 10
+
+            Btn:
+                id: yes_btn
+                size_hint: (0.5, 1)
+                text: root.text_yes
+                on_release: root.parent.dismiss()
+
+            Btn:
+                id: no_btn
+                size_hint: (0.5, 1)
+                text: root.text_no
+                on_release: root.parent.dismiss()
