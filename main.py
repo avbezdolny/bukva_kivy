@@ -243,23 +243,23 @@ class BukvaApp(App):
         self.sound_move = SoundLoader.load('click.wav')
 
         # info dialog
-        self.view_info = ModalView(size_hint=(None, None), size=[self.game_board.width, self.game_board.width * 0.75], auto_dismiss=False)
+        self.view_info = ModalView(size_hint=(None, None), size=[min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75], auto_dismiss=False)
         self.view_info.add_widget(ViewInfo())
-        self.view_info_small = ModalView(size_hint=(None, None), size=[self.game_board.width, self.game_board.width * 0.75], auto_dismiss=False)
+        self.view_info_small = ModalView(size_hint=(None, None), size=[min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75], auto_dismiss=False)
         self.view_info_small.add_widget(ViewInfoSmall())
 
         # exit dialog
-        self.view_exit = ModalView(size_hint=(None, None), size=[self.game_board.width, self.game_board.width * 0.75], auto_dismiss=False)
+        self.view_exit = ModalView(size_hint=(None, None), size=[min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75], auto_dismiss=False)
         self.view_exit.add_widget(ViewChoice(text='Выйти из игры?'))
         self.view_exit.children[0].ids.yes_btn.bind(on_release=self.stop)
 
         # pass dialog
-        self.view_pass = ModalView(size_hint=(None, None), size=[self.game_board.width, self.game_board.width * 0.75], auto_dismiss=False)
+        self.view_pass = ModalView(size_hint=(None, None), size=[min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75], auto_dismiss=False)
         self.view_pass.add_widget(ViewChoice(text='Пропустить ход?'))
         self.view_pass.children[0].ids.yes_btn.bind(on_release=self.pass_turn)
 
         # mode dialog
-        self.view_mode = ModalView(size_hint=(None, None), size=[self.game_board.width, self.game_board.width * 0.75], auto_dismiss=False)
+        self.view_mode = ModalView(size_hint=(None, None), size=[min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75], auto_dismiss=False)
         self.view_mode.add_widget(ViewMode())
         self.view_mode.children[0].ids.yes_btn.bind(on_release=self.new_game)
 
@@ -286,6 +286,7 @@ class BukvaApp(App):
             self.history_board.text = self.store.get('board_history')['value']
             self.history_board.player_text = self.store.get('board_player')['value'].split('#')
             self.is_sound = self.store.get('is_sound')['value']
+            self.sound_btn.text = '[s]звук[/s]' if not self.is_sound else 'звук'
 
             if not self.is_game_over:  # продолжаем игру
                 self.resume_game()
@@ -656,11 +657,11 @@ class BukvaApp(App):
         self.view_info_small.open()
 
     def resize(self, *args):
-        self.view_info.size = [self.game_board.width, self.game_board.width * 0.75]
-        self.view_info_small.size = [self.game_board.width, self.game_board.width * 0.75]
-        self.view_exit.size = [self.game_board.width, self.game_board.width * 0.75]
-        self.view_pass.size = [self.game_board.width, self.game_board.width * 0.75]
-        self.view_mode.size = [self.game_board.width, self.game_board.width * 0.75]
+        self.view_info.size = [min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75]
+        self.view_info_small.size = [min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75]
+        self.view_exit.size = [min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75]
+        self.view_pass.size = [min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75]
+        self.view_mode.size = [min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75]
 
         if self.view_info.children[0].text[1:5] == 'size':
             about = "[size=" + str(int(min(self.view_info.width, self.view_info.height)/15)) + "]БУКВА[/size]\n\n" \
@@ -722,5 +723,4 @@ class BukvaApp(App):
 if __name__ == '__main__':
     if platform in ['win', 'linux', 'mac']:  # desktop
         kivy.resources.resource_add_path(resourcePath())
-
     BukvaApp().run()
