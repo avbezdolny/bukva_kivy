@@ -1,0 +1,8 @@
+{
+    "check.png": {
+        "select": [0, 0, 96, 96],
+        "unselect": [96, 0, 96, 96],
+        "select_press": [192, 0, 96, 96],
+        "unselect_press": [288, 0, 96, 96]
+    }
+}
