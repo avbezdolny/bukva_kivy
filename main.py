@@ -87,12 +87,14 @@ class Tile(Widget):
                 if App.get_running_app().is_sound and App.get_running_app().sound_move: App.get_running_app().sound_move.play()
 
 
-class ShadowLabel(Label):
+class HistoryLabel(Label):
     pass
 
 
 class Btn(ButtonBehavior, Widget):
     text = StringProperty('btn')
+    color = ListProperty(get_color_from_hex('#26a69a40'))
+    text_color = ListProperty(get_color_from_hex('#26a69a'))
 
     def __init__(self, **kwargs):
         super(Btn, self).__init__(**kwargs)
@@ -101,6 +103,8 @@ class Btn(ButtonBehavior, Widget):
 class ToggleBtn(ButtonBehavior, Widget):
     text = StringProperty('K')
     is_select = BooleanProperty(False)
+    color = ListProperty(get_color_from_hex('#26a69a40'))
+    text_color = ListProperty(get_color_from_hex('#26a69a'))
 
     def __init__(self, **kwargs):
         super(ToggleBtn, self).__init__(**kwargs)
@@ -111,7 +115,7 @@ class ToggleBtn(ButtonBehavior, Widget):
                 if tbtn.text != self.text:
                     tbtn.is_select = False
             self.is_select = True if not self.is_select else False
-            if App.get_running_app().is_sound and App.get_running_app().sound_click: App.get_running_app().sound_click.play()
+            if App.get_running_app().is_sound and App.get_running_app().sound_move: App.get_running_app().sound_move.play()
             App.get_running_app().apply_btn.disabled = False if self.is_select else True
 
 
@@ -147,7 +151,6 @@ class ViewChoice(Widget):
 class SelectBox(ButtonBehavior, Widget):
     text = StringProperty('mode')
     select = BooleanProperty(False)
-    bg_color = ListProperty(get_color_from_hex('#fafafa'))
 
     def __init__(self, **kwargs):
         super(SelectBox, self).__init__(**kwargs)
@@ -164,11 +167,11 @@ class ViewMode(Widget):
 
 
 class BukvaApp(App):
+    Window.clearcolor = get_color_from_hex('#000000')
     if platform in ['win', 'linux', 'mac']:
         icon = 'data/icon.png'
         title = 'БУКВА'
-        # Window.clearcolor = get_color_from_hex('#616161')
-        Window.size = (480, 800)
+        Window.size = (480, 850)
         Window.left = 100
         Window.top = 100
 
@@ -188,7 +191,7 @@ class BukvaApp(App):
     selection_mode = BooleanProperty(False)
     is_block = BooleanProperty(True)
     score = ListProperty([0, 0])
-    info_label = StringProperty('Панель информации')
+    info_label = StringProperty('Конец игры!')
     show_keyboard = BooleanProperty(False)
     history = ListProperty([])
     word_selection = StringProperty('')
@@ -199,6 +202,7 @@ class BukvaApp(App):
     black_list = ListProperty([])  # список исключенных из поиска вариантов для ИИ
     is_game_over = BooleanProperty(False)
     store = ObjectProperty()
+    border_width = NumericProperty(2)
 
     # звуки
     is_sound = BooleanProperty(True)
@@ -229,6 +233,7 @@ class BukvaApp(App):
         self.cancel_btn.text = 'Отмена'
         self.key_board = self.root.ids.key_board
         self.history_board = self.root.ids.history_board
+        self.border_width = min(self.root.width, self.root.height)/480
 
         self.apply_btn.bind(on_release=self.press_apply_btn)
         self.cancel_btn.bind(on_release=self.press_cancel_btn)
@@ -240,34 +245,35 @@ class BukvaApp(App):
         # sounds
         self.sound_click = SoundLoader.load('click.wav')
         self.sound_popup = SoundLoader.load('popup.wav')
-        self.sound_move = SoundLoader.load('click.wav')
+        self.sound_move  = SoundLoader.load('move.wav')
 
         # info dialog
-        self.view_info = ModalView(size_hint=(None, None), size=[min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75], auto_dismiss=False)
+        self.view_info = ModalView(size_hint=(None, None), size=[min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75], auto_dismiss=False, background = 'data/background.png')
         self.view_info.add_widget(ViewInfo())
-        self.view_info_small = ModalView(size_hint=(None, None), size=[min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75], auto_dismiss=False)
+        self.view_info_small = ModalView(size_hint=(None, None), size=[min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75], auto_dismiss=False, background = 'data/background.png')
         self.view_info_small.add_widget(ViewInfoSmall())
 
         # exit dialog
-        self.view_exit = ModalView(size_hint=(None, None), size=[min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75], auto_dismiss=False)
+        self.view_exit = ModalView(size_hint=(None, None), size=[min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75], auto_dismiss=False, background = 'data/background.png')
         self.view_exit.add_widget(ViewChoice(text='Выйти из игры?'))
         self.view_exit.children[0].ids.yes_btn.bind(on_release=self.stop)
 
         # pass dialog
-        self.view_pass = ModalView(size_hint=(None, None), size=[min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75], auto_dismiss=False)
+        self.view_pass = ModalView(size_hint=(None, None), size=[min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75], auto_dismiss=False, background = 'data/background.png')
         self.view_pass.add_widget(ViewChoice(text='Пропустить ход?'))
         self.view_pass.children[0].ids.yes_btn.bind(on_release=self.pass_turn)
 
         # mode dialog
-        self.view_mode = ModalView(size_hint=(None, None), size=[min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75], auto_dismiss=False)
+        self.view_mode = ModalView(size_hint=(None, None), size=[min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75], auto_dismiss=False, background = 'data/background.png')
         self.view_mode.add_widget(ViewMode())
         self.view_mode.children[0].ids.yes_btn.bind(on_release=self.new_game)
 
         Window.bind(on_key_down=self.on_key_down)
+        if platform in ['win', 'linux', 'mac']: Window.bind(on_request_close=self.on_request_close)
         self.game_board.bind(size=Clock.schedule_once(self.resize, 0.150))
-        self.history_board.children[0].children[1].children[0].bind(on_ref_press=self.print_it)
-        self.history_board.children[0].children[0].children[1].children[0].children[0].bind(on_ref_press=self.print_it)
-        self.history_board.children[0].children[0].children[0].children[0].children[0].bind(on_ref_press=self.print_it)
+        self.history_board.children[0].children[1].bind(on_ref_press=self.print_it)
+        self.history_board.children[0].children[0].children[1].children[0].bind(on_ref_press=self.print_it)
+        self.history_board.children[0].children[0].children[0].children[0].bind(on_ref_press=self.print_it)
 
         # load data settings
         if platform in ['win', 'linux', 'mac']:  # desktop
@@ -306,7 +312,7 @@ class BukvaApp(App):
         self.sound_btn.text = '[s]звук[/s]' if not self.is_sound else 'звук'
 
     def show_about(self):
-        about = "[size=" + str(int(min(self.view_info.width, self.view_info.height)/15)) + "]БУКВА[/size]\n\n" \
+        about = "[size=" + str(int(min(self.view_info.width, self.view_info.height)/14)) + "]БУКВА[/size]\n\n" \
                 "Лингвистическая настольная игра для 2 игроков, в которой необходимо составлять слова с " \
                 "помощью букв, добавляемых определённым образом на квадратное игровое поле.\n\nСлова составляются " \
                 "посредством переходов от буквы к букве под прямым углом. Игровое поле представляет собой " \
@@ -328,7 +334,7 @@ class BukvaApp(App):
                 "омонимы.\n\nИгра заканчивается тогда, когда либо заполнены все клетки, либо невозможно составить " \
                 "очередное слово согласно указанным выше правилам. Выигрывает тот игрок, который наберёт большее " \
                 "количество очков.[size=" + str(int(min(self.view_info.width, self.view_info.height)/30)) + "]\n\n" \
-                "* * *\n(c) Антон Бездольный, 2020\n/ вер. 1.1 /[/size]"
+                "* * *\n(c) Антон Бездольный, 2020\n/ вер. 2.0 /[/size]"
         self.view_info.children[0].text = about
         self.view_info.open()
 
@@ -657,6 +663,8 @@ class BukvaApp(App):
         self.view_info_small.open()
 
     def resize(self, *args):
+        self.border_width = min(self.root.width, self.root.height)/480
+        
         self.view_info.size = [min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75]
         self.view_info_small.size = [min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75]
         self.view_exit.size = [min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75]
@@ -664,7 +672,7 @@ class BukvaApp(App):
         self.view_mode.size = [min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75]
 
         if self.view_info.children[0].text[1:5] == 'size':
-            about = "[size=" + str(int(min(self.view_info.width, self.view_info.height)/15)) + "]БУКВА[/size]\n\n" \
+            about = "[size=" + str(int(min(self.view_info.width, self.view_info.height)/14)) + "]БУКВА[/size]\n\n" \
                     "Лингвистическая настольная игра для 2 игроков, в которой необходимо составлять слова с " \
                     "помощью букв, добавляемых определённым образом на квадратное игровое поле.\n\nСлова составляются " \
                     "посредством переходов от буквы к букве под прямым углом. Игровое поле представляет собой " \
@@ -686,7 +694,7 @@ class BukvaApp(App):
                     "омонимы.\n\nИгра заканчивается тогда, когда либо заполнены все клетки, либо невозможно составить " \
                     "очередное слово согласно указанным выше правилам. Выигрывает тот игрок, который наберёт большее " \
                     "количество очков.[size=" + str(int(min(self.view_info.width, self.view_info.height)/30)) + "]\n\n" \
-                    "* * *\n(c) Антон Бездольный, 2020\n/ вер. 1.1 /[/size]"
+                    "* * *\n(c) Антон Бездольный, 2020\n/ вер. 2.0 /[/size]"
             self.view_info.children[0].text = about
             self.view_info.children[0].scroll_label.scroll_y = 1
 
@@ -695,6 +703,11 @@ class BukvaApp(App):
             if self.is_sound and self.sound_popup: self.sound_popup.play()
             self.view_exit.open()
             return True
+
+    def on_request_close(self, *args):
+        if self.is_sound and self.sound_popup: self.sound_popup.play()
+        self.view_exit.open()
+        return True
 
     def save_data(self):
         self.store.put('matrix', value="#".join(self.matrix))
