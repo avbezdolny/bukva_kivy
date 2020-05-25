@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import kivy
-kivy.require('1.11.1')
-
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.core.window import Window
@@ -84,7 +82,7 @@ class Tile(Widget):
             self.selection = True
             if self.tile_index not in App.get_running_app().matrix_selection:
                 App.get_running_app().matrix_selection.append(self.tile_index)
-                if App.get_running_app().is_sound and App.get_running_app().sound_move: App.get_running_app().sound_move.play()
+                if App.get_running_app().is_sound: App.get_running_app().sound_move_play()
 
 
 class HistoryLabel(Label):
@@ -115,7 +113,7 @@ class ToggleBtn(ButtonBehavior, Widget):
                 if tbtn.text != self.text:
                     tbtn.is_select = False
             self.is_select = True if not self.is_select else False
-            if App.get_running_app().is_sound and App.get_running_app().sound_move: App.get_running_app().sound_move.play()
+            if App.get_running_app().is_sound and App.get_running_app().sound_click: App.get_running_app().sound_click.play()
             App.get_running_app().apply_btn.disabled = False if self.is_select else True
 
 
@@ -208,7 +206,6 @@ class BukvaApp(App):
     is_sound = BooleanProperty(True)
     sound_click = None
     sound_popup = None
-    sound_move = None
 
     # Диалоги
     view_exit = ObjectProperty(None)
@@ -299,6 +296,10 @@ class BukvaApp(App):
         else:
             self.begin_game()
 
+    def sound_move_play(self):
+        sound_move  = SoundLoader.load('move.wav')
+        if sound_move: sound_move.play()
+
     def press_apply_btn(self, *args):
         self.show_keyboard = False
         self.search_word()
@@ -334,7 +335,7 @@ class BukvaApp(App):
                 "омонимы.\n\nИгра заканчивается тогда, когда либо заполнены все клетки, либо невозможно составить " \
                 "очередное слово согласно указанным выше правилам. Выигрывает тот игрок, который наберёт большее " \
                 "количество очков.[size=" + str(int(min(self.view_info.width, self.view_info.height)/30)) + "]\n\n" \
-                "* * *\n(c) Антон Бездольный, 2020\n/ вер. 2.0 /[/size]"
+                "* * *\n(c) Антон Бездольный, 2020\n/ вер. 2.1 /[/size]"
         self.view_info.children[0].text = about
         self.view_info.open()
 
@@ -694,7 +695,7 @@ class BukvaApp(App):
                     "омонимы.\n\nИгра заканчивается тогда, когда либо заполнены все клетки, либо невозможно составить " \
                     "очередное слово согласно указанным выше правилам. Выигрывает тот игрок, который наберёт большее " \
                     "количество очков.[size=" + str(int(min(self.view_info.width, self.view_info.height)/30)) + "]\n\n" \
-                    "* * *\n(c) Антон Бездольный, 2020\n/ вер. 2.0 /[/size]"
+                    "* * *\n(c) Антон Бездольный, 2020\n/ вер. 2.1 /[/size]"
             self.view_info.children[0].text = about
             self.view_info.children[0].scroll_label.scroll_y = 1
 
