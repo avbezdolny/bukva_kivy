@@ -242,7 +242,6 @@ class BukvaApp(App):
         # sounds
         self.sound_click = SoundLoader.load('click.wav')
         self.sound_popup = SoundLoader.load('popup.wav')
-        self.sound_move  = SoundLoader.load('move.wav')
 
         # info dialog
         self.view_info = ModalView(size_hint=(None, None), size=[min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48, (min(self.root.width, self.root.height) - 2*min(self.root.width, self.root.height)/48) * 0.75], auto_dismiss=False, background = 'data/background.png')
@@ -335,7 +334,7 @@ class BukvaApp(App):
                 "омонимы.\n\nИгра заканчивается тогда, когда либо заполнены все клетки, либо невозможно составить " \
                 "очередное слово согласно указанным выше правилам. Выигрывает тот игрок, который наберёт большее " \
                 "количество очков.[size=" + str(int(min(self.view_info.width, self.view_info.height)/30)) + "]\n\n" \
-                "* * *\n(c) Антон Бездольный, 2020\n/ вер. 2.1 /[/size]"
+                "* * *\n(c) Антон Бездольный, 2020\n/ вер. 2.2 /[/size]"
         self.view_info.children[0].text = about
         self.view_info.open()
 
@@ -695,7 +694,7 @@ class BukvaApp(App):
                     "омонимы.\n\nИгра заканчивается тогда, когда либо заполнены все клетки, либо невозможно составить " \
                     "очередное слово согласно указанным выше правилам. Выигрывает тот игрок, который наберёт большее " \
                     "количество очков.[size=" + str(int(min(self.view_info.width, self.view_info.height)/30)) + "]\n\n" \
-                    "* * *\n(c) Антон Бездольный, 2020\n/ вер. 2.1 /[/size]"
+                    "* * *\n(c) Антон Бездольный, 2020\n/ вер. 2.2 /[/size]"
             self.view_info.children[0].text = about
             self.view_info.children[0].scroll_label.scroll_y = 1
 
